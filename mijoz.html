@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Menyu</title>
+<style>
+:root{--bg:#eaf3fd;--card:#f7fbff;--ink:#1b2a3d;--mut:#6f86a3;--line:#d6e4f5;--pr:#1f5fd1;--gold:#d8b259;--gi:#3a2c0a;--acc:#e8892b;--ok:#1f9d63}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1823;--card:#172433;--ink:#eaf1fa;--mut:#8fa6c2;--line:#25364a;--pr:#6ea8ff;--gold:#d8b259;--gi:#2a1f06;--acc:#ff9a45}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px -apple-system,"Segoe UI",Roboto,Arial,sans-serif;padding:0 14px 100px;max-width:980px;margin-inline:auto}
+button{font:inherit;border:0;background:none;color:inherit}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-top:calc(12px + env(safe-area-inset-top,0px))}
+h1{font-size:22px;margin:0}
+.rt{display:flex;gap:8px}.rt button{background:var(--card);border-radius:12px;padding:9px 13px;font-weight:600;border:1px solid var(--line)}
+#tabs{position:sticky;top:0;z-index:5;display:flex;gap:20px;overflow-x:auto;background:var(--bg);padding:14px 2px 8px;margin-top:6px;scrollbar-width:none;padding-top:calc(14px + env(safe-area-inset-top,0px))}
+#tabs::-webkit-scrollbar{display:none}
+.tab{white-space:nowrap;padding:6px 0;font-size:16px;font-weight:600;color:var(--mut);border-bottom:3px solid transparent}
+.tab.on{color:var(--ink);border-color:var(--acc)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:12px;margin-top:8px}
+.cd{background:var(--card);border-radius:18px;padding:8px 8px 10px;box-shadow:0 1px 4px rgba(30,60,110,.08)}
+.im{position:relative;aspect-ratio:4/3;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,#dfeafa,#c9dcf5);display:flex;align-items:center;justify-content:center;font-size:48px}
+@media (prefers-color-scheme:dark){.im{background:linear-gradient(135deg,#22354b,#1b2b3d)}}
+.im img{width:100%;height:100%;object-fit:cover;display:block}
+.im i{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5);color:#fff;font-style:normal;font-weight:700;font-size:16px}
+.nm{font-weight:700;margin:10px 4px 0;min-height:2.4em;line-height:1.2}
+.pr{display:flex;justify-content:space-between;align-items:center;margin:8px 4px 0;gap:6px;min-height:40px}
+.pr b{color:var(--pr);font-size:15px}
+.pl{width:40px;height:40px;border-radius:50%;background:var(--gold);color:var(--gi);font-size:24px;font-weight:700;line-height:1}
+.q{display:flex;align-items:center;gap:6px}.q b{color:var(--ink);min-width:16px;text-align:center}
+.q button{width:32px;height:32px;border-radius:50%;background:var(--gold);color:var(--gi);font-size:20px;font-weight:700}
+.h{color:var(--mut);font-size:14px}
+.pn{background:var(--card);border-radius:16px;padding:14px;margin-top:12px}
+.al{background:#fff1e0;color:#b4560a;font-weight:600}
+@media (prefers-color-scheme:dark){.al{background:#3a2a1b;color:#ffb072}}
+.tot{display:flex;justify-content:space-between;padding:4px 0}.big{font-size:21px;font-weight:700}
+#bar{position:fixed;left:0;right:0;bottom:0;display:flex;gap:8px;padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));background:var(--card);border-top:1px solid var(--line)}
+#bar button{padding:14px;border-radius:14px;font-weight:700;font-size:16px;background:var(--bg)}
+#bb{flex:1}#bo{flex:2;background:var(--gold)!important;color:var(--gi)}
+#tt{position:fixed;left:14px;right:14px;top:calc(10px + env(safe-area-inset-top,0px));background:var(--ink);color:var(--bg);padding:12px;border-radius:12px;text-align:center;z-index:9}
+.hide{display:none!important}
+</style>
+</head>
+<body>
+<div class="top"><h1 id="ti"></h1><div class="rt"><button id="lgb" onclick="lg()">UZ</button><button id="cw" onclick="callW()"></button></div></div>
+<div id="msg" class="h"></div>
+<div id="tabs"></div>
+<div id="menu" class="grid"></div>
+<div id="bill" class="hide"></div>
+<div id="bar"><button id="bb" onclick="tb(view?0:1)"></button><button id="bo" class="hide" onclick="send()"></button></div>
+<div id="tt" class="hide"></div>
+<script>
+const $=id=>document.getElementById(id);
+const P=new URLSearchParams(location.search),K=P.get("k"),DB=(P.get("db")||"").trim().replace(/\/$/,"");
+const L={
+uz:{som:"soʻm",menu:"Menyu",bill:"Mening hisobim",order:"Buyurtma berish",call:"Ofitsiant",sold:"Tugadi",total:"Jami",sub:"Oraliq",disc:"Chegirma",svc:"Xizmat haqi",tip:"Ofitsiant haqi",empty:"Hozircha tasdiqlangan buyurtma yoʻq.",pend:"Tasdiqlanishini kutayotgan buyurtma",sent:"Buyurtma yuborildi. Ofitsiant tasdiqlaydi.",wait:"Biroz kuting",off:"Ofitsiant ilovasi hozir oflayn. «Ofitsiant» tugmasini bosing yoki qoʻl koʻtaring.",called:"Ofitsiant chaqirildi",nosend:"Yuborib boʻlmadi, qayta urining",nocall:"Chaqirib boʻlmadi",noconn:"Aloqa yoʻq, qayta urinilmoqda...",load:"Menyu yuklanmoqda...",bad:"Havola notoʻgʻri. Stoldagi QR kodni qayta skanerlang.",sending:"Yuborilmoqda...",table:"Stol"},
+ru:{som:"сум",menu:"Меню",bill:"Мой счёт",order:"Заказать",call:"Официант",sold:"Нет",total:"Итого",sub:"Сумма",disc:"Скидка",svc:"Обслуживание",tip:"Чаевые",empty:"Подтверждённых заказов пока нет.",pend:"Заказ ждёт подтверждения",sent:"Заказ отправлен. Официант подтвердит.",wait:"Подождите немного",off:"Приложение официанта сейчас офлайн. Нажмите «Официант» или поднимите руку.",called:"Официант вызван",nosend:"Не удалось отправить, попробуйте ещё раз",nocall:"Не удалось вызвать",noconn:"Нет связи, пробуем снова...",load:"Меню загружается...",bad:"Неверная ссылка. Отсканируйте QR-код на столе ещё раз.",sending:"Отправка...",table:"Стол"}};
+let lang="uz";try{lang=localStorage.getItem("lg")||"uz"}catch(e){}
+const tr=k=>L[lang][k];
+const f=n=>Math.round(n).toLocaleString("ru-RU").replace(/\u00a0/g," ")+" "+tr("som");
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");
+const EM=["🥟","🍚","🥤","🍞"];
+let lastSend=0,M={menu:[],cats:[]},B=null,RQ={},cart={},tm,ac=0,view=0;
+const J=async(m,p,b)=>{const r=await fetch(DB+p+".json",{method:m,body:b===undefined?undefined:JSON.stringify(b)});if(!r.ok)throw 0;return r.json()};
+function toast(s){const t=$("tt");t.textContent=s;t.classList.remove("hide");clearTimeout(tm);tm=setTimeout(()=>t.classList.add("hide"),3500)}
+const cnt=()=>Object.values(cart).reduce((a,b)=>a+b,0);
+const sum=()=>Object.entries(cart).reduce((a,[id,q])=>a+q*((M.menu.find(m=>m.id==id)||{}).p||0),0);
+function lg(){lang=lang=="uz"?"ru":"uz";try{localStorage.setItem("lg",lang)}catch(e){}ui()}
+function ui(){$("lgb").textContent=lang.toUpperCase();$("cw").textContent="🔔 "+tr("call");if(!B||!B.name)$("ti").textContent=tr("table");drawMenu();drawBill();bar()}
+function tb(n){view=n;$("menu").classList.toggle("hide",!!n);$("tabs").classList.toggle("hide",!!n);$("bill").classList.toggle("hide",!n);bar()}
+function bar(){$("bb").textContent=view?tr("menu"):tr("bill");$("bo").classList.toggle("hide",!cnt()||!!view);$("bo").textContent=tr("order")+" · "+cnt()+" · "+f(sum())}
+function ch(id,d){const m=M.menu.find(x=>x.id==id);if(!m||m.off)return;cart[id]=Math.min(20,(cart[id]||0)+d);if(cart[id]<=0)delete cart[id];drawMenu();bar()}
+function ctl(m){
+ if(m.off)return"";
+ return cart[m.id]?`<div class="q"><button onclick="ch(${m.id},-1)">−</button><b>${cart[m.id]}</b><button onclick="ch(${m.id},1)">+</button></div>`:`<button class="pl" onclick="ch(${m.id},1)">+</button>`;
+}
+function drawMenu(){
+ const cs=(M.cats||[]).map((c,i)=>[c,i]).filter(([c,i])=>(M.menu||[]).some(m=>m.c==i));
+ if(cs.length&&!cs.some(([c,i])=>i==ac))ac=cs[0][1];
+ $("tabs").innerHTML=cs.map(([c,i])=>`<button class="tab ${i==ac?"on":""}" onclick="ac=${i};drawMenu()">${esc(c)}</button>`).join("");
+ $("menu").innerHTML=(M.menu||[]).filter(m=>m.c==ac).map(m=>`<div class="cd"><div class="im">${m.img?`<img src="${m.img}" alt="">`:`<span>${EM[m.c]||"🍽️"}</span>`}${m.off?`<i>${tr("sold")}</i>`:""}</div><div class="nm">${esc(m.n)}</div><div class="pr"><b>${f(m.p)}</b>${ctl(m)}</div></div>`).join("")||`<p class="h">${tr("load")}</p>`;
+}
+function drawBill(){
+ const b=B||{},ls=b.lines||[],pc=Object.keys(RQ||{}).length;
+ const dc=(b.sub||0)*(b.disc||0)/100,sv=((b.sub||0)-dc)*(b.svc||0)/100;
+ $("bill").innerHTML=(pc?`<div class="pn al">${tr("pend")}: ${pc}</div>`:"")+(ls.length?`<div class="pn">${ls.map(l=>`<div class="tot"><span>${l.q} x ${esc(l.n)}</span><b>${f(l.q*l.p)}</b></div>`).join("")}<div class="tot h"><span>${tr("sub")}</span><span>${f(b.sub||0)}</span></div>${dc?`<div class="tot h"><span>${tr("disc")}</span><span>-${f(dc)}</span></div>`:""}${sv?`<div class="tot h"><span>${tr("svc")}</span><span>${f(sv)}</span></div>`:""}${b.tip?`<div class="tot h"><span>${tr("tip")}</span><span>${f(b.tip)}</span></div>`:""}<div class="tot big"><span>${tr("total")}</span><span>${f(b.total||0)}</span></div></div>`:`<p class="h">${tr("empty")}</p>`);
+ if(b.name)$("ti").textContent=b.name;
+}
+async function send(){
+ const lines=Object.entries(cart).map(([id,q])=>{const m=M.menu.find(x=>x.id==id);return m&&!m.off?{id:+id,n:m.n,p:m.p,q}:null}).filter(Boolean);
+ if(!lines.length)return;
+ if(Date.now()-lastSend<8000){toast(tr("wait"));return}
+ lastSend=Date.now();
+ $("bo").textContent=tr("sending");
+ try{await J("POST","/t/"+K+"/in/req",{lines,ts:Date.now()});cart={};toast(tr("sent"));poll();tb(1)}catch(e){toast(tr("nosend"))}
+ drawMenu();bar();
+}
+async function callW(){try{await J("PUT","/t/"+K+"/in/call",Date.now());toast(tr("called"))}catch(e){toast(tr("nocall"))}}
+async function lm(){try{M=(await J("GET","/t/"+K+"/menu"))||M;drawMenu();bar()}catch(e){}}
+function msg(t){const m=$("msg");m.textContent=t;m.className=t?"pn al":"h"}
+async function poll(){
+ try{B=await J("GET","/t/"+K+"/bill");RQ=(await J("GET","/t/"+K+"/in/req"))||{};const pg=await J("GET","/t/"+K+"/ping");drawBill();msg((!pg||Date.now()-pg>45000)?tr("off"):"")}
+ catch(e){msg(tr("noconn"))}
+}
+ui();
+if(!K||!DB){$("menu").innerHTML=`<div class="pn">${tr("bad")}</div>`}
+else{lm();poll();setInterval(poll,5000);setInterval(lm,300000)}
+</script>
+</body>
+</html>
